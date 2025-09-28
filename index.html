@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credential Management ROI Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        .card {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            border-radius: 0.75rem;
+        }
+        .input-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-800">Lunar Project ROI Calculator</h1>
+            <p class="text-gray-500 mt-1">Estimate operational efficiency and risk reduction value (USD)</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- 1. USER INPUTS CARD -->
+            <div class="lg:col-span-1 card bg-white p-6 h-fit">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-2 text-indigo-700">1. User Inputs (Monthly)</h2>
+
+                <div class="space-y-4">
+                    <!-- B2 Input -->
+                    <div class="input-group">
+                        <label for="inputB2" class="input-label text-sm font-medium text-gray-700">
+                            B2: Monthly Breach Creds (< 3 months)
+                        </label>
+                        <input type="number" id="inputB2" value="100" min="0" oninput="calculateROI()"
+                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-2.5 border focus:border-indigo-500 focus:ring-indigo-500 transition duration-150">
+                    </div>
+
+                    <!-- B3 Input -->
+                    <div class="input-group">
+                        <label for="inputB3" class="input-label text-sm font-medium text-gray-700">
+                            B3: Monthly Infostealer Credentials
+                        </label>
+                        <input type="number" id="inputB3" value="50" min="0" oninput="calculateROI()"
+                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-2.5 border focus:border-indigo-500 focus:ring-indigo-500 transition duration-150">
+                    </div>
+
+                    <!-- B4 Input -->
+                    <div class="input-group">
+                        <label for="inputB4" class="input-label text-sm font-medium text-gray-700">
+                            B4: Monthly High Privilege Credentials
+                        </label>
+                        <input type="number" id="inputB4" value="10" min="0" oninput="calculateROI()"
+                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-2.5 border focus:border-indigo-500 focus:ring-indigo-500 transition duration-150">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. CONSTANTS CARD -->
+            <div class="lg:col-span-2 card bg-white p-6 h-fit">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-2 text-indigo-700">2. Constants</h2>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    
+                    <!-- NEW ANNUALIZATION FACTOR -->
+                    <div class="flex flex-col">
+                        <label class="text-sm font-medium text-gray-700">Annualization Factor</label>
+                        <div class="mt-1 p-2.5 bg-gray-50 rounded-lg border text-gray-800">12</div>
+                    </div>
+
+                    <div class="flex flex-col">
+                        <label class="text-sm font-medium text-gray-700">B6: DBIR Manual Handling (Hours)</label>
+                        <div class="mt-1 p-2.5 bg-gray-50 rounded-lg border text-gray-800" id="constB6">0.4167</div>
+                    </div>
+                    <div class="flex flex-col">
+                        <label class="text-sm font-medium text-gray-700">B9: Average Cost per Credential (USD)</label>
+                        <div class="mt-1 p-2.5 bg-gray-50 rounded-lg border text-gray-800" id="constB9">$168</div>
+                    </div>
+
+                    <div class="flex flex-col">
+                        <label class="text-sm font-medium text-gray-700">B7: Automation Time - Breach (Hours)</label>
+                        <div class="mt-1 p-2.5 bg-gray-50 rounded-lg border text-gray-800" id="constB7">0.0028</div>
+                    </div>
+                    <div class="flex flex-col">
+                        <label class="text-sm font-medium text-gray-700">B10: Privilege Multiplier</label>
+                        <div class="mt-1 p-2.5 bg-gray-50 rounded-lg border text-gray-800" id="constB10">2</div>
+                    </div>
+
+                    <div class="flex flex-col">
+                        <label class="text-sm font-medium text-gray-700">B8: Automation Time - Infostealer (Hours)</label>
+                        <div class="mt-1 p-2.5 bg-gray-50 rounded-lg border text-gray-800" id="constB8">0.0083</div>
+                    </div>
+                     <!-- B11 - NEW HOURLY COST -->
+                    <div class="flex flex-col">
+                        <label class="text-sm font-medium text-gray-700">B11: Tier 2 Analyst Hourly Cost (USD)</label>
+                        <div class="mt-1 p-2.5 bg-gray-50 rounded-lg border text-gray-800" id="constB11">$53</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. OUTPUTS CARD -->
+            <div class="lg:col-span-3 card bg-white p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-2 text-green-700">3. Calculated Outputs (ROI)</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <!-- OPERATIONAL EFFICIENCY & COST SAVINGS -->
+                    <div class="border p-4 rounded-lg bg-green-50">
+                        <h3 class="font-bold text-lg mb-3 text-green-800">Operational Efficiency Gain (Annual) & Cost Savings</h3>
+                        <div class="space-y-3">
+                            <!-- B12 -->
+                            <div class="flex justify-between items-center text-sm">
+                                <span>B12: Breach Creds Gain (Annual Hours):</span>
+                                <span id="outputB12" class="font-mono font-semibold text-green-600">0.00</span>
+                            </div>
+                            <!-- B13 -->
+                            <div class="flex justify-between items-center text-sm">
+                                <span>B13: Infostealer Creds Gain (Annual Hours):</span>
+                                <span id="outputB13" class="font-mono font-semibold text-green-600">0.00</span>
+                            </div>
+                            <!-- B14 -->
+                            <div class="flex justify-between items-center text-sm font-semibold pt-2 border-t mt-2">
+                                <span>B14: TOTAL Efficiency Gain (Annual Hours):</span>
+                                <span id="outputB14" class="font-mono text-green-700">0.00</span>
+                            </div>
+                            <!-- B15 - NEW LABOR COST SAVINGS -->
+                            <div class="flex justify-between items-center text-base pt-2 border-t mt-2 font-bold">
+                                <span>B15: TOTAL Labor Cost Savings (Annual USD):</span>
+                                <span id="outputB15" class="font-mono text-xl text-green-700">0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RISK REDUCTION VALUE -->
+                    <div class="border p-4 rounded-lg bg-red-50">
+                        <h3 class="font-bold text-lg mb-3 text-red-800">Risk Reduction Value (Annual USD)</h3>
+                        <div class="space-y-3">
+                            <!-- B16 -->
+                            <div class="flex justify-between items-center text-sm">
+                                <span>B16: Regular Creds Value (Annual):</span>
+                                <span id="outputB16" class="font-mono font-semibold text-red-600">0.00</span>
+                            </div>
+                            <!-- B17 -->
+                            <div class="flex justify-between items-center text-sm">
+                                <span>B17: High Privilege Creds Value (Annual):</span>
+                                <span id="outputB17" class="font-mono font-semibold text-red-600">0.00</span>
+                            </div>
+                            <!-- B18 -->
+                            <div class="flex justify-between items-center text-base pt-2 border-t mt-2 font-bold">
+                                <span>B18: TOTAL Risk Reduction (Annual USD):</span>
+                                <span id="outputB18" class="font-mono text-xl text-red-700">0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 4. EXECUTIVE SUMMARY CARD -->
+            <div class="lg:col-span-3 card bg-white p-6">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-2 text-purple-700">4. Executive Summary (Annualized)</h2>
+                
+                <p class="text-sm text-gray-600 mb-4">Click below to generate an executive summary based on the calculated ROI figures, ready for client use.</p>
+                
+                <button onclick="generateSalesPitch()" id="pitchButton"
+                    class="w-full sm:w-auto flex items-center justify-center bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-200 focus:outline-none focus:ring-4 focus:ring-purple-300">
+                    <span class="text-lg mr-2">📝</span> Generate Executive Summary
+                </button>
+                
+                <div id="pitchOutput" class="mt-6 p-4 border border-purple-200 bg-purple-50 rounded-lg min-h-[50px] text-gray-800">
+                    <p class="text-gray-500" id="pitchText">Click 'Generate Executive Summary' to populate this section.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Wrapping the script in an Immediately Invoked Function Expression (IIFE)
+        // to create a local scope for variables (like C) and prevent the "already declared" error
+        (function() {
+            // Constants
+            const C = {
+                B6: 0.4167, // DBIR average manual handling time per credential (hours)
+                B7: 0.0028, // Lunar automation handling time for breach credentials (hours)
+                B8: 0.0083, // Lunar automation handling time for infostealer credentials (hours)
+                B9: 168,    // Average cost per credential (USD) - UPDATED to $168
+                B10: 2,      // Privilege multiplier
+                B11: 53.00,  // Tier 2 Analyst Hourly Cost (USD)
+                ANNUAL_FACTOR: 12 // Annualization Factor
+            };
+            
+            // Helper function to get numeric input value
+            function getInputValue(id) {
+                const element = document.getElementById(id);
+                // Use parseFloat, but ensure null/empty strings result in 0
+                return parseFloat(element.value) || 0;
+            }
+
+            // Helper function to format hours
+            function formatHours(value) {
+                return value.toFixed(2);
+            }
+
+            // Helper function to format USD
+            function formatUSD(value) {
+                return new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 2
+                }).format(value);
+            }
+            
+            // --- CORE CALCULATOR LOGIC (ANNUALIZED) ---
+
+            // Define the calculation function
+            function calculateROI() {
+                try {
+                    // 1. Get Inputs (B2, B3, B4) - Assumed MONTHLY
+                    const B2 = getInputValue('inputB2');
+                    const B3 = getInputValue('inputB3');
+                    const B4 = getInputValue('inputB4');
+                    
+                    const factor = C.ANNUAL_FACTOR;
+
+                    // --- MONTHLY OPERATIONAL EFFICIENCY GAIN (HOURS) & LABOR SAVINGS (USD) ---
+                    const B12_monthly = B2 * (C.B6 - C.B7); // Monthly B12
+                    const B13_monthly = B3 * (C.B6 - C.B8); // Monthly B13
+                    const B14_monthly = B12_monthly + B13_monthly;  // Monthly B14 (Hours)
+                    const B15_monthly = B14_monthly * C.B11;        // Monthly B15 (Labor USD)
+
+                    // --- MONTHLY RISK REDUCTION VALUE (USD) ---
+                    const B16_monthly = (B2 + B3) * C.B9;     // Monthly B16
+                    const B17_monthly = B4 * C.B10 * C.B9;    // Monthly B17
+                    const B18_monthly = B16_monthly + B17_monthly;    // Monthly B18
+
+                    // --- ANNUALIZATION ---
+                    const B12 = B12_monthly * factor; // Annual Hours
+                    const B13 = B13_monthly * factor; // Annual Hours
+                    const B14 = B14_monthly * factor; // Annual Hours
+                    const B15 = B15_monthly * factor; // Annual USD
+                    const B16 = B16_monthly * factor; // Annual USD
+                    const B17 = B17_monthly * factor; // Annual USD
+                    const B18 = B18_monthly * factor; // Annual USD
+
+                    // 3. Update Outputs (Display)
+                    document.getElementById('outputB12').textContent = formatHours(B12);
+                    document.getElementById('outputB13').textContent = formatHours(B13);
+                    document.getElementById('outputB14').textContent = formatHours(B14);
+                    document.getElementById('outputB15').textContent = formatUSD(B15);
+
+                    document.getElementById('outputB16').textContent = formatUSD(B16);
+                    document.getElementById('outputB17').textContent = formatUSD(B17);
+                    document.getElementById('outputB18').textContent = formatUSD(B18);
+
+                } catch (error) {
+                    console.error("ROI Calculation Error:", error);
+                    // Display error message
+                    document.getElementById('outputB14').textContent = "ERROR";
+                    document.getElementById('outputB18').textContent = "ERROR";
+                }
+            }
+            
+            // --- STATIC SUMMARY GENERATION ---
+            
+            function generateSalesPitch() {
+                const pitchTextElement = document.getElementById('pitchText');
+                
+                // Ensure calculations are up-to-date
+                calculateROI(); 
+                
+                // Retrieve the final calculated values from the display elements (formatted strings)
+                const B14_hours_str = document.getElementById('outputB14').textContent;
+                const B15_labor_str = document.getElementById('outputB15').textContent;
+                const B18_usd_str = document.getElementById('outputB18').textContent;
+
+                // Check for valid calculation results before generating the summary
+                const B14_hours_raw = parseFloat(B14_hours_str);
+
+                if (B14_hours_raw === 0) {
+                    pitchTextElement.innerHTML = "<p class='text-gray-500'>Please enter non-zero credential counts in the User Inputs to generate the summary.</p>";
+                    return;
+                }
+
+                // Construct the required template strings
+                const efficiencyTemplate = `Operational Efficiency Gains (Annual): Estimated <span class="font-bold text-green-700">${B14_hours_str}</span> hours saved for SOC analysts vs. manual approaches`;
+                const laborTemplate = `Labor Cost Savings (Annual): Estimated <span class="font-bold text-green-700">${B15_labor_str}</span> saved on analyst effort.`;
+                const riskTemplate = `Risk Reduction Value (Annual): Estimated financial avoidance of breach impact (~<span class="font-bold text-red-700">${B18_usd_str}</span> based on industry models)`;
+
+                // Combine and display
+                pitchTextElement.innerHTML = `
+                    <p class="mb-2">${efficiencyTemplate}</p>
+                    <p class="mb-2">${laborTemplate}</p>
+                    <p>${riskTemplate}</p>
+                `;
+            }
+
+
+            // Expose functions globally
+            window.calculateROI = calculateROI;
+            window.generateSalesPitch = generateSalesPitch;
+
+            // Initialize calculation on page load
+            window.onload = function() {
+                calculateROI();
+            };
+
+        })(); // End IIFE
+
+    </script>
+</body>
+</html>
