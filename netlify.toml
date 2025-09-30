@@ -1,0 +1,13 @@
+[functions]
+
+Specifies the directory where your serverless functions are located.
+This tells Netlify to look inside the 'api' folder you created.
+directory = "api"
+
+[[redirects]]
+
+This rule ensures that if your calculator calls the proxy,
+Netlify knows to route it to the correct serverless function.
+from = "/api/generate-summary"
+to = "/.netlify/functions/generate-summary"
+status = 200
