@@ -3,25 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lunar Credentials ROI Calculator</title>
+    <title>Lunar Project ROI Calculator</title>
+    <!-- Tailwind setup with custom theme colors -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#0D0D0F',
+                        'secondary': '#FFFFFF',
+                        'accent': '#560BAB',
+                    },
+                    // Using a custom font stack to approximate the clean, geometric style of Neue Montreal
+                    fontFamily: {
+                        sans: ['"Neue Montreal"', 'Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        /* Note: Neue Montreal is a premium font and is unlikely to load without manual embedding. 
+           We rely on the Tailwind font stack defined above. */
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: var(--font-sans, "Neue Montreal", Inter, system-ui, sans-serif);
             background-color: #f4f7f9;
         }
         .tab-button.active {
-            border-bottom: 3px solid #007bff; /* Blue underline for active tab */
-            color: #007bff;
+            border-bottom: 3px solid #560BAB; /* Accent Color */
+            color: #560BAB; /* Accent Color */
             font-weight: 600;
         }
         input[type="number"], input[type="text"] {
             transition: all 0.2s;
         }
         input[type="number"]:focus, input[type="text"]:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+            border-color: #560BAB; /* Accent Color */
+            box-shadow: 0 0 0 3px rgba(86, 11, 171, 0.25); /* Accent Color Shadow */
         }
         .input-group label {
             min-width: 150px;
@@ -30,13 +49,13 @@
 </head>
 <body class="p-4 sm:p-8">
 
-    <div id="app" class="max-w-4xl mx-auto bg-white shadow-xl rounded-xl p-6 sm:p-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">Lunar Project ROI Calculator</h1>
+    <div id="app" class="max-w-4xl mx-auto bg-secondary shadow-xl rounded-xl p-6 sm:p-8">
+        <h1 class="text-3xl font-bold text-primary mb-6 border-b pb-2">Lunar Project ROI Calculator</h1>
 
         <!-- Tab Navigation -->
         <div class="flex border-b border-gray-200 mb-6 space-x-4">
-            <button class="tab-button active p-3 text-lg text-gray-600 transition duration-150" data-tab="volume">Stolen Credential Volume ROI</button>
-            <button class="tab-button p-3 text-lg text-gray-600 transition duration-150" data-tab="breach">Employee Count ROI</button>
+            <button class="tab-button active p-3 text-lg text-primary transition duration-150" data-tab="volume">Stolen Credential Volume ROI</button>
+            <button class="tab-button p-3 text-lg text-primary transition duration-150" data-tab="breach">Employee Count ROI</button>
         </div>
 
         <!-- Tab Content Containers -->
@@ -45,32 +64,526 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                 <!-- Column 1: Inputs -->
-                <div class="col-span-1 p-5 bg-indigo-50 rounded-lg shadow-inner">
-                    <h2 class="text-xl font-semibold text-indigo-800 mb-4">1. User Inputs (Monthly Volume)</h2>
-                    <p class="text-sm text-indigo-600 mb-4">Data is typically pulled directly from the Lunar Platform.</p>
+                <div class="col-span-1 p-5 bg-secondary rounded-lg shadow-inner border border-gray-100">
+                    <h2 class="text-xl font-semibold text-primary mb-4">1. User Inputs (Monthly Volume)</h2>
+                    <p class="text-sm text-gray-600 mb-4">Data is typically pulled directly from the Lunar Platform.</p>
 
                     <!-- B2 -->
                     <div class="input-group mb-4">
-                        <label for="b2" class="block text-sm font-medium text-gray-700 mb-1">Breach Credentials (Monthly)</label>
+                        <label for="b2" class="block text-sm font-medium text-primary mb-1">Breach Credentials (Monthly)</label>
                         <input type="number" id="b2" value="100" min="0" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none" oninput="calculateROI()">
                     </div>
                     <!-- B3 -->
                     <div class="input-group mb-4">
-                        <label for="b3" class="block text-sm font-medium text-gray-700 mb-1">Infostealer Credentials (Monthly)</label>
+                        <label for="b3" class="block text-sm font-medium text-primary mb-1">Infostealer Credentials (Monthly)</label>
                         <input type="number" id="b3" value="50" min="0" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none" oninput="calculateROI()">
                     </div>
                     <!-- B4 -->
                     <div class="input-group">
-                        <label for="b4" class="block text-sm font-medium text-gray-700 mb-1">High Privilege Credentials (Monthly)</label>
+                        <label for="b4" class="block text-sm font-medium text-primary mb-1">High Privilege Credentials (Monthly)</label>
                         <input type="number" id="b4" value="10" min="0" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none" oninput="calculateROI()">
                     </div>
                 </div>
 
                 <!-- Column 2: Constants -->
-                <div class="col-span-1 p-5 bg-gray-50 rounded-lg shadow-inner">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">2. Constants (Industry Benchmarks)</h2>
+                <div class="col-span-1 p-5 bg-gray-100 rounded-lg shadow-inner">
+                    <h2 class="text-xl font-semibold text-primary mb-4">2. Constants (Industry Benchmarks)</h2>
                     <p class="text-sm text-gray-600 mb-4">These values anchor the financial model's credibility.</p>
                     <div class="space-y-3 text-sm">
                         <!-- B6 -->
                         <div class="flex justify-between items-center input-group">
-                            <label class="text-gray-700">DBIR Manual
+                            <label class="text-primary">DBIR Manual Handling Time</label>
+                            <span class="font-mono bg-secondary p-1 rounded border border-gray-200">25 minutes</span>
+                            <span id="b6" class="hidden">0.4167</span>
+                        </div>
+                        <!-- B7 -->
+                        <div class="flex justify-between items-center input-group">
+                            <label class="text-primary">Lunar Breach Automation (hrs)</label>
+                            <span id="b7" class="font-mono bg-secondary p-1 rounded border border-gray-200">0.0028</span>
+                        </div>
+                        <!-- B8 -->
+                        <div class="flex justify-between items-center input-group">
+                            <label class="text-primary">Lunar Infostealer Automation (hrs)</label>
+                            <span id="b8" class="font-mono bg-secondary p-1 rounded border border-gray-200">0.0083</span>
+                        </div>
+                        <!-- B9 -->
+                        <div class="flex justify-between items-center input-group">
+                            <label class="text-primary">Avg Cost per Credential (USD)</label>
+                            <span id="b9" class="font-mono bg-secondary p-1 rounded border border-gray-200">168</span>
+                        </div>
+                        <!-- B10 -->
+                        <div class="flex justify-between items-center input-group">
+                            <label class="text-primary">Privilege Multiplier</label>
+                            <span id="b10" class="font-mono bg-secondary p-1 rounded border border-gray-200">2</span>
+                        </div>
+                        <!-- B11 -->
+                        <div class="flex justify-between items-center input-group">
+                            <label class="text-primary">Tier 2 Analyst Hourly Cost (USD)</label>
+                            <span id="b11" class="font-mono bg-secondary p-1 rounded border border-gray-200">53</span>
+                        </div>
+                        <!-- Annualization Factor -->
+                        <div class="flex justify-between items-center input-group">
+                            <label class="text-primary">Annualization Factor</label>
+                            <span id="annual_factor" class="font-mono bg-secondary p-1 rounded border border-gray-200">12</span>
+                        </div>
+                    </div>
+                    
+                    <!-- SOURCE VALIDATION FOR VOLUME TAB -->
+                    <h3 class="font-bold text-lg text-primary border-b pb-1 pt-4 mt-4">Source Validation</h3>
+                    <div class="text-xs mt-2 space-y-1 text-gray-700">
+                        <p><strong>Cost per Credential ($168):</strong> Derived from the **Ponemon Institute's** Cost of a Data Breach Report.</p>
+                        <p><strong>Manual Time (25 min):</strong> Based on remediation benchmarks from the **Verizon DBIR** and similar incident response studies.</p>
+                        <p><strong>Analyst Cost ($53):</strong> Average fully loaded cost for a Tier 2 Security Analyst in the US market.</p>
+                    </div>
+                </div>
+
+                <!-- Column 3: Outputs -->
+                <div class="col-span-1 p-5 bg-secondary rounded-lg shadow-lg border-t-4 border-accent">
+                    <h2 class="text-xl font-semibold text-primary mb-4">3. Annualized Outputs</h2>
+
+                    <div class="space-y-4">
+                        <h3 class="font-bold text-lg text-primary border-b pb-1">Operational Efficiency</h3>
+                        <!-- B12 & B13 (Combined) -->
+                        <div class="flex justify-between items-center">
+                            <label class="text-primary">Efficiency Gain (Annual Hours)</label>
+                            <span id="b14_output" class="text-xl font-extrabold text-accent">0</span>
+                        </div>
+                        <!-- B15 -->
+                        <div class="flex justify-between items-center">
+                            <label class="text-primary">Total Labor Cost Savings (Annual USD)</label>
+                            <span id="b15_output" class="text-xl font-extrabold text-accent">$0</span>
+                        </div>
+
+                        <h3 class="font-bold text-lg text-primary border-b pb-1 pt-3">Risk Reduction Value</h3>
+                        <!-- B16 & B17 (Combined) -->
+                        <div class="flex justify-between items-center">
+                            <label class="text-primary">Risk Reduction Value (Annual USD)</label>
+                            <span id="b18_output" class="text-xl font-extrabold text-accent">$0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Executive Summary Section (Credential Tab) -->
+            <div class="mt-8 p-6 bg-secondary border-2 border-accent rounded-xl shadow-md">
+                <h2 class="text-2xl font-bold text-primary mb-4">4. Executive Summary - AI Pitch Generator</h2>
+                <div id="executive-summary" class="text-primary text-lg min-h-[100px]">
+                    <p>Click "Generate AI-Powered Pitch" to instantly create a narrative summary for your proposal.</p>
+                </div>
+                <button id="pitch-button" onclick="generateExecutiveSummary()" class="mt-4 w-full sm:w-auto px-6 py-3 bg-accent text-white font-semibold rounded-lg shadow-lg hover:bg-[#45098c] transition duration-200 flex items-center justify-center">
+                    <span id="pitch-text">Generate AI-Powered Pitch</span>
+                    <svg id="pitch-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Expected Breach ROI Tab -->
+        <div id="breach-tab" class="tab-content hidden">
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                <!-- Column 1: Inputs (Breach Tab) -->
+                <div class="col-span-1 p-5 bg-secondary rounded-lg shadow-inner border border-gray-100">
+                    <h2 class="text-xl font-semibold text-primary mb-4">1. User Inputs (Company Size)</h2>
+                    <p class="text-sm text-gray-600 mb-4">Select the client's employee count to determine pricing and risk tier.</p>
+
+                    <!-- Employee Count -->
+                    <div class="input-group mb-4">
+                        <label for="employee_count" class="block text-sm font-medium text-primary mb-1">Total Employee Count</label>
+                        <input type="number" id="employee_count" value="7000" min="1" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none" oninput="calculateBreachROI()">
+                    </div>
+                    <!-- Average Breach Cost Constant (B19) -->
+                    <div class="input-group">
+                        <label for="avg_breach_cost" class="block text-sm font-medium text-primary mb-1">Global Avg Breach Cost (USD)</label>
+                        <input type="text" id="avg_breach_cost" value="4,400,000" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none" oninput="calculateBreachROI()">
+                    </div>
+                </div>
+
+                <!-- Column 2: Tier Lookups (Breach Tab) -->
+                <div class="col-span-1 p-5 bg-gray-100 rounded-lg shadow-inner">
+                    <h2 class="text-xl font-semibold text-primary mb-4">2. Tier & Pricing Match</h2>
+                    <p class="text-sm text-gray-600 mb-4">Automatically determined by Employee Count.</p>
+                    <div class="space-y-3 text-sm">
+                        <!-- Tier -->
+                        <div class="flex justify-between items-center input-group">
+                            <label class="text-primary">Company Size Tier</label>
+                            <span id="tier_output" class="font-mono bg-secondary p-1 rounded border border-gray-200">Medium (5,000–9,999)</span>
+                        </div>
+                        <!-- Price Per Employee -->
+                        <div class="flex justify-between items-center input-group">
+                            <label class="text-primary">Monthly Price / Employee</label>
+                            <span id="price_output" class="font-mono bg-secondary p-1 rounded border border-gray-200">$4.34</span>
+                        </div>
+                        <!-- Breach Likelihood -->
+                        <div class="flex justify-between items-center input-group">
+                            <label class="text-primary">Annual Breach Likelihood</label>
+                            <span id="likelihood_output" class="font-mono bg-secondary p-1 rounded border border-gray-200">42%</span>
+                        </div>
+                    </div>
+
+                    <h3 class="font-bold text-lg text-primary border-b pb-1 pt-4 mt-4">Lookup Table</h3>
+                    <div class="text-xs mt-2 space-y-1">
+                        <p class="text-primary">0–999: $6.00 / 18%</p>
+                        <p class="text-primary">1,000–4,999: $5.10 / 25%</p>
+                        <p class="text-primary">5,000–9,999: $4.34 / 42%</p>
+                        <p class="text-primary">10,000+: $3.68 / 60%</p>
+                    </div>
+
+                    <!-- SOURCE VALIDATION FOR BREACH TAB -->
+                    <h3 class="font-bold text-lg text-primary border-b pb-1 pt-4 mt-4">Source Validation</h3>
+                    <div class="text-xs mt-2 space-y-1 text-gray-700">
+                        <p><strong>Breach Likelihood:</strong> Sourced from the **UK Government Cybersecurity Breaches Survey 2025** (adjusted for global context).</p>
+                        <p><strong>Avg Breach Cost ($4.4M):</strong> Based on the **Global Average Cost of a Data Breach** (Ponemon/IBM 2024).</p>
+                    </div>
+                </div>
+
+                <!-- Column 3: Outputs (Breach Tab) -->
+                <div class="col-span-1 p-5 bg-secondary rounded-lg shadow-lg border-t-4 border-accent">
+                    <h2 class="text-xl font-semibold text-primary mb-4">3. Executive ROI Metrics</h2>
+
+                    <div class="space-y-4">
+                        <!-- Annual Cost -->
+                        <div class="flex justify-between items-center">
+                            <label class="text-primary">Lunar Project Annual Cost</label>
+                            <span id="annual_cost_output" class="text-xl font-extrabold text-accent">$0</span>
+                        </div>
+                        <!-- Avoidance Value -->
+                        <div class="flex justify-between items-center">
+                            <label class="text-primary">Annual Breach Avoidance Value</label>
+                            <span id="avoidance_value_output" class="text-xl font-extrabold text-accent">$0</span>
+                        </div>
+                        <!-- Final ROI -->
+                        <div class="flex justify-between items-center border-t pt-4 mt-4">
+                            <label class="text-2xl font-bold text-primary">Final ROI (Return on Investment)</label>
+                            <span id="roi_percentage_output" class="text-2xl font-extrabold text-accent">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Executive Summary Section (Breach Tab) -->
+            <div class="mt-8 p-6 bg-secondary border-2 border-accent rounded-xl shadow-md">
+                <h2 class="text-2xl font-bold text-primary mb-4">4. Executive Summary - AI Pitch Generator</h2>
+                <div id="breach-summary" class="text-primary text-lg min-h-[100px]">
+                    <p>Click "Generate AI-Powered Pitch" to instantly create a narrative summary for your proposal.</p>
+                </div>
+                <button id="breach-pitch-button" onclick="generateBreachSummary()" class="mt-4 w-full sm:w-auto px-6 py-3 bg-accent text-white font-semibold rounded-lg shadow-lg hover:bg-[#45098c] transition duration-200 flex items-center justify-center">
+                    <span id="breach-pitch-text">Generate AI-Powered Pitch</span>
+                    <svg id="breach-pitch-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div> <!-- End of Breach Tab -->
+
+    </div> <!-- End of App -->
+
+    <script>
+        // IIFE to contain variables and prevent global conflicts
+        (function() {
+            // --- CONSTANTS ---
+            const C = {
+                // Volume Tab Constants
+                MANUAL_HANDLE_TIME_HR: 0.4167, // Used for calculations (25 minutes)
+                LUNAR_BREACH_AUTO_HR: 0.0028,
+                LUNAR_INFOSTEALER_AUTO_HR: 0.0083,
+                AVG_COST_PER_CRED: 168,
+                PRIVILEGE_MULTIPLIER: 2,
+                ANALYST_HOURLY_COST: 53,
+                ANNUALIZATION_FACTOR: 12,
+
+                // Breach Tab Constants
+                AVG_BREACH_COST_USD: 4400000,
+                TIERS: [
+                    { min: 0, max: 999, price: 6.00, likelihood: 0.18, label: "Micro" },
+                    { min: 1000, max: 4999, price: 5.10, likelihood: 0.25, label: "Small" },
+                    { min: 5000, max: 9999, price: 4.34, likelihood: 0.42, label: "Medium" },
+                    { min: 10000, max: Infinity, price: 3.68, likelihood: 0.60, label: "Large" }
+                ],
+                
+                // --- GEMINI API CONSTANTS ---
+                API_KEY: "", // If you want to use models other than gemini-2.5-flash-preview-05-20, provide an API key here. Otherwise, leave this as-is.
+                API_MODEL: "gemini-2.5-flash-preview-05-20",
+                SYSTEM_PROMPT: "You are a world-class Sales Pitch Generator for a cybersecurity automation platform called 'Lunar Project.' Your goal is to convert the provided ROI data into a compelling, concise, and executive-level narrative suitable for a CISO or CFO. Focus on validating the investment by highlighting both the hard cost savings (Labor) and the strategic financial avoidance (Risk Reduction). The pitch must be persuasive and professional. Provide a single, powerful narrative paragraph. Always mention the source of the savings (Labor Cost Savings and Risk Reduction Value) using the exact numbers provided.",
+            };
+
+            // --- UTILITY FUNCTIONS ---
+            const formatCurrency = (amount) => {
+                return new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 0
+                }).format(amount);
+            };
+
+            const formatNumber = (num) => {
+                return new Intl.NumberFormat('en-US', {
+                    maximumFractionDigits: 2
+                }).format(num);
+            };
+            
+            const formatPercent = (decimal) => {
+                return new Intl.NumberFormat('en-US', {
+                    style: 'percent',
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                }).format(decimal);
+            };
+
+            // --- LLM API CALL WITH BACKOFF ---
+            async function callGeminiAPI(userQuery, systemPrompt, maxRetries = 3) {
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${C.API_MODEL}:generateContent?key=${C.API_KEY}`;
+                
+                const payload = {
+                    contents: [{ parts: [{ text: userQuery }] }],
+                    tools: [{ "google_search": {} }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                };
+
+                for (let i = 0; i < maxRetries; i++) {
+                    try {
+                        const response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (response.ok) {
+                            const result = await response.json();
+                            const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                            
+                            if (text) {
+                                return text;
+                            } else {
+                                throw new Error("API response text was empty or malformed.");
+                            }
+                        } else if (response.status === 429) {
+                            // Rate limit hit, apply exponential backoff
+                            const delay = Math.pow(2, i) * 1000;
+                            console.warn(`Rate limit hit (429). Retrying in ${delay / 1000}s...`);
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                        } else {
+                            throw new Error(`API request failed with status: ${response.status}`);
+                        }
+                    } catch (error) {
+                        if (i === maxRetries - 1) {
+                            console.error("Gemini API call failed after multiple retries:", error);
+                            return "Error: Could not generate pitch. Please check console for details.";
+                        }
+                        // For network or general errors, retry with backoff as well
+                        const delay = Math.pow(2, i) * 1000;
+                        console.warn(`API call failed. Retrying in ${delay / 1000}s...`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    }
+                }
+                return "Error: Failed to connect to the pitch generator service.";
+            }
+
+
+            // --- VOLUME TAB LOGIC (Tab 1) ---
+
+            window.calculateROI = function() {
+                try {
+                    const B2 = parseFloat(document.getElementById('b2').value) || 0;
+                    const B3 = parseFloat(document.getElementById('b3').value) || 0;
+                    const B4 = parseFloat(document.getElementById('b4').value) || 0;
+
+                    // Operational Efficiency (Annual Hours)
+                    // B12: Efficiency gain for breach = B2 * (B6 - B7) * 12
+                    const B12_annual_hours = B2 * (C.MANUAL_HANDLE_TIME_HR - C.LUNAR_BREACH_AUTO_HR) * C.ANNUALIZATION_FACTOR;
+                    // B13: Efficiency gain for infostealer = B3 * (B6 - B8) * 12
+                    const B13_annual_hours = B3 * (C.MANUAL_HANDLE_TIME_HR - C.LUNAR_INFOSTEALER_AUTO_HR) * C.ANNUALIZATION_FACTOR;
+                    // B14: Total efficiency gain = B12 + B13
+                    const B14_total_annual_hours = B12_annual_hours + B13_annual_hours;
+                    
+                    // Labor Cost Savings (Annual USD)
+                    // B15: Labor Cost Savings = B14 * B11
+                    const B15_labor_savings = B14_total_annual_hours * C.ANALYST_HOURLY_COST;
+                    
+                    // Risk Reduction Value (Annual USD)
+                    // B16: Risk reduction for regular creds = (B2 + B3) * B9 * 12
+                    const B16_annual_risk = (B2 + B3) * C.AVG_COST_PER_CRED * C.ANNUALIZATION_FACTOR;
+                    // B17: Risk reduction for high privilege creds = B4 * B10 * B9 * 12
+                    const B17_annual_risk = B4 * C.PRIVILEGE_MULTIPLIER * C.AVG_COST_PER_CRED * C.ANNUALIZATION_FACTOR;
+                    // B18: Total risk reduction = B16 + B17
+                    const B18_total_risk_reduction = B16_annual_risk + B17_annual_risk;
+
+                    // Update Outputs
+                    document.getElementById('b14_output').textContent = formatNumber(B14_total_annual_hours);
+                    document.getElementById('b15_output').textContent = formatCurrency(B15_labor_savings);
+                    document.getElementById('b18_output').textContent = formatCurrency(B18_total_risk_reduction);
+
+                } catch (e) {
+                    console.error("Error in calculateROI:", e);
+                }
+            }
+
+            window.generateExecutiveSummary = async function() {
+                const pitchContainer = document.getElementById('executive-summary');
+                const pitchButton = document.getElementById('pitch-button');
+                const pitchTextSpan = document.getElementById('pitch-text');
+                const pitchSpinner = document.getElementById('pitch-spinner');
+
+                // --- Loading State ---
+                pitchButton.disabled = true;
+                pitchTextSpan.textContent = "Generating...";
+                pitchSpinner.classList.remove('hidden');
+                pitchContainer.innerHTML = `<p class="text-center text-gray-500">Processing complex ROI narrative...</p>`;
+
+                try {
+                    const hours = document.getElementById('b14_output').textContent;
+                    const laborSavings = document.getElementById('b15_output').textContent;
+                    const riskReduction = document.getElementById('b18_output').textContent;
+                    
+                    const userQuery = `The client's annual results from using the Lunar Project's credential automation are: Operational Efficiency Gain (Hours Saved): ${hours} hours. Total Labor Cost Savings: ${laborSavings}. Total Risk Reduction Value: ${riskReduction}. Generate the pitch.`;
+
+                    const generatedPitch = await callGeminiAPI(userQuery, C.SYSTEM_PROMPT);
+
+                    // Re-format the output to match the branding and paragraph style
+                    pitchContainer.innerHTML = `<p class="text-primary">${generatedPitch}</p>`;
+
+                } catch (e) {
+                    pitchContainer.innerHTML = `<p class="text-red-600">Failed to generate pitch. Error: ${e.message}</p>`;
+                } finally {
+                    // --- Reset State ---
+                    pitchButton.disabled = false;
+                    pitchTextSpan.textContent = "Generate AI-Powered Pitch";
+                    pitchSpinner.classList.add('hidden');
+                }
+            }
+            
+            // --- BREACH TAB LLM LOGIC ---
+            window.generateBreachSummary = async function() {
+                const pitchContainer = document.getElementById('breach-summary');
+                const pitchButton = document.getElementById('breach-pitch-button');
+                const pitchTextSpan = document.getElementById('breach-pitch-text');
+                const pitchSpinner = document.getElementById('breach-pitch-spinner');
+
+                // --- Loading State ---
+                pitchButton.disabled = true;
+                pitchTextSpan.textContent = "Generating...";
+                pitchSpinner.classList.remove('hidden');
+                pitchContainer.innerHTML = `<p class="text-center text-gray-500">Processing executive risk analysis...</p>`;
+
+                try {
+                    const annualCost = document.getElementById('annual_cost_output').textContent;
+                    const avoidanceValue = document.getElementById('avoidance_value_output').textContent;
+                    const roiPercentage = document.getElementById('roi_percentage_output').textContent;
+                    
+                    // User Query tailored for the Breach Tab
+                    const userQuery = `The client's annual results from using the Lunar Project are: Annual Subscription Cost: ${annualCost}. Annual Breach Avoidance Value: ${avoidanceValue}. Total Return on Investment (ROI): ${roiPercentage}. The pitch must focus on how the high ROI percentage validates the investment by mitigating massive executive risk (Average Global Breach Cost of $4.4M). Generate the pitch.`;
+
+                    const generatedPitch = await callGeminiAPI(userQuery, C.SYSTEM_PROMPT);
+
+                    // Re-format the output to match the branding and paragraph style
+                    pitchContainer.innerHTML = `<p class="text-primary">${generatedPitch}</p>`;
+
+                } catch (e) {
+                    pitchContainer.innerHTML = `<p class="text-red-600">Failed to generate pitch. Error: ${e.message}</p>`;
+                } finally {
+                    // --- Reset State ---
+                    pitchButton.disabled = false;
+                    pitchTextSpan.textContent = "Generate AI-Powered Pitch";
+                    pitchSpinner.classList.add('hidden');
+                }
+            }
+
+
+            // --- BREACH TAB LOGIC (Tab 2) ---
+
+            const getBreachTier = (employeeCount) => {
+                const tier = C.TIERS.find(t => employeeCount >= t.min && employeeCount <= t.max);
+                // Return a default large tier if something unexpected happens
+                return tier || C.TIERS.find(t => t.min === 10000); 
+            };
+
+            window.calculateBreachROI = function() {
+                try {
+                    const employeeCount = parseFloat(document.getElementById('employee_count').value.replace(/,/g, '')) || 0;
+                    
+                    let avgBreachCostInput = document.getElementById('avg_breach_cost').value.replace(/[^0-9.]/g, '');
+                    let avgBreachCost = parseFloat(avgBreachCostInput) || C.AVG_BREACH_COST_USD;
+                    
+                    // Update input format for cleaner look
+                    document.getElementById('avg_breach_cost').value = formatCurrency(avgBreachCost).replace(/\.00$/, ''); 
+
+                    if (employeeCount === 0) {
+                        // Reset outputs if no employees are entered
+                        document.getElementById('tier_output').textContent = "N/A";
+                        document.getElementById('price_output').textContent = formatCurrency(0);
+                        document.getElementById('likelihood_output').textContent = formatPercent(0);
+                        document.getElementById('annual_cost_output').textContent = formatCurrency(0);
+                        document.getElementById('avoidance_value_output').textContent = formatCurrency(0);
+                        document.getElementById('roi_percentage_output').textContent = formatPercent(0);
+                        return;
+                    }
+
+                    const tier = getBreachTier(employeeCount);
+                    
+                    const monthlyPrice = tier.price;
+                    const likelihood = tier.likelihood;
+
+                    // 1. Annual Cost
+                    const annualCost = employeeCount * monthlyPrice * C.ANNUALIZATION_FACTOR;
+
+                    // 2. Annualized Breach Avoidance Value
+                    // Formula: Likelihood * Avg_Breach_Cost (e.g., 0.42 * $4.4M)
+                    const breachAvoidanceValue = likelihood * avgBreachCost;
+
+                    // 3. ROI: (Avoidance Value - Annual Cost) / Annual Cost
+                    const roi = (breachAvoidanceValue - annualCost) / annualCost;
+
+                    // Update Tier Lookups
+                    document.getElementById('tier_output').textContent = `${tier.label} (${formatNumber(tier.min)}–${tier.max === Infinity ? '+' : formatNumber(tier.max)})`;
+                    document.getElementById('price_output').textContent = formatCurrency(monthlyPrice);
+                    document.getElementById('likelihood_output').textContent = formatPercent(likelihood);
+
+                    // Update Outputs
+                    document.getElementById('annual_cost_output').textContent = formatCurrency(annualCost);
+                    document.getElementById('avoidance_value_output').textContent = formatCurrency(breachAvoidanceValue);
+                    document.getElementById('roi_percentage_output').textContent = formatPercent(roi);
+                } catch (e) {
+                    console.error("Error in calculateBreachROI:", e);
+                }
+            }
+
+            // --- TAB SWITCHING LOGIC ---
+
+            document.addEventListener('DOMContentLoaded', () => {
+                // Initial calculations
+                window.calculateROI();
+                window.calculateBreachROI();
+
+                const tabs = document.querySelectorAll('.tab-button');
+                const tabContents = document.querySelectorAll('.tab-content');
+
+                function switchTab(targetTab) {
+                    tabs.forEach(tab => tab.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.add('hidden'));
+
+                    const activeTabButton = document.querySelector(`.tab-button[data-tab="${targetTab}"]`);
+                    const activeTabContent = document.getElementById(`${targetTab}-tab`);
+
+                    if (activeTabButton) activeTabButton.classList.add('active');
+                    if (activeTabContent) activeTabContent.classList.remove('hidden');
+                }
+
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        const targetTab = tab.getAttribute('data-tab');
+                        switchTab(targetTab);
+                    });
+                });
+                
+                // Initialize the Breach Cost input with commas on load
+                document.getElementById('avg_breach_cost').value = formatCurrency(C.AVG_BREACH_COST_USD).replace(/\.00$/, '');
+            });
+
+        })();
+    </script>
+</body>
+</html>
