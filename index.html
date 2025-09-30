@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lunar Project ROI Calculator</title>
+    <title>Lunar Credentials ROI Calculator</title>
     <!-- Tailwind setup with custom theme colors -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -50,7 +50,7 @@
 <body class="p-4 sm:p-8">
 
     <div id="app" class="max-w-4xl mx-auto bg-secondary shadow-xl rounded-xl p-6 sm:p-8">
-        <h1 class="text-3xl font-bold text-primary mb-6 border-b pb-2">Lunar Project ROI Calculator</h1>
+        <h1 class="text-3xl font-bold text-primary mb-6 border-b pb-2">Lunar Credentials ROI Calculator</h1>
 
         <!-- Tab Navigation -->
         <div class="flex border-b border-gray-200 mb-6 space-x-4">
@@ -166,12 +166,12 @@
 
             <!-- Executive Summary Section (Credential Tab) -->
             <div class="mt-8 p-6 bg-secondary border-2 border-accent rounded-xl shadow-md">
-                <h2 class="text-2xl font-bold text-primary mb-4">4. Executive Summary - AI Pitch Generator</h2>
+                <h2 class="text-2xl font-bold text-primary mb-4">4. Executive Summary - Value Summary</h2>
                 <div id="executive-summary" class="text-primary text-lg min-h-[100px]">
-                    <p>Click "Generate AI-Powered Pitch" to instantly create a narrative summary for your proposal.</p>
+                    <p>Click "Generate Value Summary" to instantly create a concise summary for client review.</p>
                 </div>
                 <button id="pitch-button" onclick="generateExecutiveSummary()" class="mt-4 w-full sm:w-auto px-6 py-3 bg-accent text-white font-semibold rounded-lg shadow-lg hover:bg-[#45098c] transition duration-200 flex items-center justify-center">
-                    <span id="pitch-text">Generate AI-Powered Pitch</span>
+                    <span id="pitch-text">Generate Value Summary</span>
                     <svg id="pitch-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -266,12 +266,12 @@
 
             <!-- Executive Summary Section (Breach Tab) -->
             <div class="mt-8 p-6 bg-secondary border-2 border-accent rounded-xl shadow-md">
-                <h2 class="text-2xl font-bold text-primary mb-4">4. Executive Summary - AI Pitch Generator</h2>
+                <h2 class="text-2xl font-bold text-primary mb-4">4. Executive Summary - Value Summary</h2>
                 <div id="breach-summary" class="text-primary text-lg min-h-[100px]">
-                    <p>Click "Generate AI-Powered Pitch" to instantly create a narrative summary for your proposal.</p>
+                    <p>Click "Generate Value Summary" to instantly create a concise summary for client review.</p>
                 </div>
                 <button id="breach-pitch-button" onclick="generateBreachSummary()" class="mt-4 w-full sm:w-auto px-6 py-3 bg-accent text-white font-semibold rounded-lg shadow-lg hover:bg-[#45098c] transition duration-200 flex items-center justify-center">
-                    <span id="breach-pitch-text">Generate AI-Powered Pitch</span>
+                    <span id="breach-pitch-text">Generate Value Summary</span>
                     <svg id="breach-pitch-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -308,7 +308,8 @@
                 // --- GEMINI API CONSTANTS ---
                 API_KEY: "", // If you want to use models other than gemini-2.5-flash-preview-05-20, provide an API key here. Otherwise, leave this as-is.
                 API_MODEL: "gemini-2.5-flash-preview-05-20",
-                SYSTEM_PROMPT: "You are a world-class Sales Pitch Generator for a cybersecurity automation platform called 'Lunar Project.' Your goal is to convert the provided ROI data into a compelling, concise, and executive-level narrative suitable for a CISO or CFO. Focus on validating the investment by highlighting both the hard cost savings (Labor) and the strategic financial avoidance (Risk Reduction). The pitch must be persuasive and professional. Provide a single, powerful narrative paragraph. Always mention the source of the savings (Labor Cost Savings and Risk Reduction Value) using the exact numbers provided.",
+                // UPDATED SYSTEM PROMPT: Now focused on objective, professional summary creation.
+                SYSTEM_PROMPT: "You are an objective financial summary creator for a cybersecurity platform called 'Lunar Credentials ROI Calculator.' Your goal is to provide a concise, single-paragraph executive summary of the calculated ROI data. The tone must be professional and informative, summarizing the hard cost savings (Labor) and strategic financial avoidance (Risk Reduction/Avoidance) without being overly persuasive or promotional. State the key metrics clearly using the exact numbers provided.",
             };
 
             // --- UTILITY FUNCTIONS ---
@@ -361,20 +362,28 @@
                             } else {
                                 throw new Error("API response text was empty or malformed.");
                             }
-                        } else if (response.status === 429) {
-                            // Rate limit hit, apply exponential backoff
-                            const delay = Math.pow(2, i) * 1000;
-                            console.warn(`Rate limit hit (429). Retrying in ${delay / 1000}s...`);
-                            await new Promise(resolve => setTimeout(resolve, delay));
                         } else {
-                            // Non-429 API failure (likely 400/403 for missing key)
-                            throw new Error(`API request failed with status: ${response.status} ${response.statusText}`);
+                            // Enhanced check for authentication/authorization issues
+                            let errorStatus = response.status;
+                            let errorMessage = `API request failed with status: ${errorStatus} ${response.statusText}.`;
+
+                            if (errorStatus === 400 || errorStatus === 403) {
+                                errorMessage = `The API request failed due to an authorization issue (Status ${errorStatus}). Please ensure your environment has correctly provided the API key and that the API is enabled for your project.`;
+                            } else if (errorStatus === 429) {
+                                // Explicitly handle 429 inside the catch block to continue the retry loop
+                                const delay = Math.pow(2, i) * 1000;
+                                console.warn(`Rate limit hit (429). Retrying in ${delay / 1000}s...`);
+                                await new Promise(resolve => setTimeout(resolve, delay));
+                                continue; // Skip throwing error and proceed to next retry attempt
+                            }
+
+                            // If not a 429 (rate limit), throw the detailed error
+                            throw new Error(errorMessage);
                         }
                     } catch (error) {
                         if (i === maxRetries - 1) {
-                            console.error("Gemini API call failed after multiple retries:", error);
-                            // Return the specific error message encountered on final attempt
-                            return `Final Error: API failed after ${maxRetries} attempts. Reason: ${error.message}.`; 
+                            // On final failure, return the most specific error message captured.
+                            return `Final Error: API failed after ${maxRetries} attempts. Cause: ${error.message}.`; 
                         }
                         // For network or general errors, retry with backoff as well
                         const delay = Math.pow(2, i) * 1000;
@@ -382,7 +391,7 @@
                         await new Promise(resolve => setTimeout(resolve, delay));
                     }
                 }
-                return "Error: Failed to connect to the pitch generator service.";
+                return "Error: Failed to connect to the summary service after maximum retries.";
             }
 
 
@@ -434,14 +443,14 @@
                 pitchButton.disabled = true;
                 pitchTextSpan.textContent = "Generating...";
                 pitchSpinner.classList.remove('hidden');
-                pitchContainer.innerHTML = `<p class="text-center text-gray-500">Processing complex ROI narrative...</p>`;
+                pitchContainer.innerHTML = `<p class="text-center text-gray-500">Processing objective summary...</p>`;
 
                 try {
                     const hours = document.getElementById('b14_output').textContent;
                     const laborSavings = document.getElementById('b15_output').textContent;
                     const riskReduction = document.getElementById('b18_output').textContent;
                     
-                    const userQuery = `The client's annual results from using the Lunar Project's credential automation are: Operational Efficiency Gain (Hours Saved): ${hours} hours. Total Labor Cost Savings: ${laborSavings}. Total Risk Reduction Value: ${riskReduction}. Generate the pitch.`;
+                    const userQuery = `The client's annual results from using the Lunar Credentials ROI Calculator are: Operational Efficiency Gain (Hours Saved): ${hours} hours. Total Labor Cost Savings: ${laborSavings}. Total Risk Reduction Value: ${riskReduction}. Generate the summary.`;
 
                     const generatedPitch = await callGeminiAPI(userQuery, C.SYSTEM_PROMPT);
 
@@ -449,11 +458,12 @@
                     pitchContainer.innerHTML = `<p class="text-primary">${generatedPitch}</p>`;
 
                 } catch (e) {
-                    pitchContainer.innerHTML = `<p class="text-red-600">Failed to generate pitch. Error: ${e.message}</p>`;
+                    // Display the error returned by the API call function
+                    pitchContainer.innerHTML = `<p class="text-red-600 font-bold">Error: Could not generate summary.</p><p class="text-red-500 text-sm">${generatedPitch}</p>`;
                 } finally {
                     // --- Reset State ---
                     pitchButton.disabled = false;
-                    pitchTextSpan.textContent = "Generate AI-Powered Pitch";
+                    pitchTextSpan.textContent = "Generate Value Summary";
                     pitchSpinner.classList.add('hidden');
                 }
             }
@@ -469,7 +479,7 @@
                 pitchButton.disabled = true;
                 pitchTextSpan.textContent = "Generating...";
                 pitchSpinner.classList.remove('hidden');
-                pitchContainer.innerHTML = `<p class="text-center text-gray-500">Processing executive risk analysis...</p>`;
+                pitchContainer.innerHTML = `<p class="text-center text-gray-500">Processing objective summary...</p>`;
 
                 try {
                     const annualCost = document.getElementById('annual_cost_output').textContent;
@@ -477,7 +487,7 @@
                     const roiPercentage = document.getElementById('roi_percentage_output').textContent;
                     
                     // User Query tailored for the Breach Tab
-                    const userQuery = `The client's annual results from using the Lunar Project are: Annual Subscription Cost: ${annualCost}. Annual Breach Avoidance Value: ${avoidanceValue}. Total Return on Investment (ROI): ${roiPercentage}. The pitch must focus on how the high ROI percentage validates the investment by mitigating massive executive risk (Average Global Breach Cost of $4.4M). Generate the pitch.`;
+                    const userQuery = `The client's annual results from using the Lunar Credentials ROI Calculator are: Annual Subscription Cost: ${annualCost}. Annual Breach Avoidance Value: ${avoidanceValue}. Total Return on Investment (ROI): ${roiPercentage}. The summary must focus on the high ROI percentage and the validation of investment by mitigating executive risk (Average Global Breach Cost of $4.4M). Generate the summary.`;
 
                     const generatedPitch = await callGeminiAPI(userQuery, C.SYSTEM_PROMPT);
 
@@ -485,11 +495,12 @@
                     pitchContainer.innerHTML = `<p class="text-primary">${generatedPitch}</p>`;
 
                 } catch (e) {
-                    pitchContainer.innerHTML = `<p class="text-red-600">Failed to generate pitch. Error: ${e.message}</p>`;
+                    // Display the error returned by the API call function
+                    pitchContainer.innerHTML = `<p class="text-red-600 font-bold">Error: Could not generate summary.</p><p class="text-red-500 text-sm">${generatedPitch}</p>`;
                 } finally {
                     // --- Reset State ---
                     pitchButton.disabled = false;
-                    pitchTextSpan.textContent = "Generate AI-Powered Pitch";
+                    pitchTextSpan.textContent = "Generate Value Summary";
                     pitchSpinner.classList.add('hidden');
                 }
             }
@@ -589,4 +600,3 @@
     </script>
 </body>
 </html>
-
