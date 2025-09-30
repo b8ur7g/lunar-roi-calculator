@@ -83,7 +83,7 @@
                         <label for="b4" class="block text-sm font-medium text-primary mb-1">High Privilege Credentials (Monthly)</label>
                         <input type="number" id="b4" value="10" min="0" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none" oninput="calculateROI()">
                     </div>
-                    <!-- NEW INPUT: Employee Count -->
+                    <!-- Employee Count -->
                     <div class="input-group">
                         <label for="employee_count_volume" class="block text-sm font-medium text-primary mb-1">Total Employee Count</label>
                         <input type="number" id="employee_count_volume" value="7000" min="1" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none" oninput="calculateROI()">
@@ -167,12 +167,12 @@
                         </div>
                         
                         <h3 class="font-bold text-lg text-primary border-b pb-1 pt-3">Investment & ROI</h3>
-                        <!-- NEW OUTPUT: Annual Cost -->
+                        <!-- Annual Cost -->
                         <div class="flex justify-between items-center">
                             <label class="text-primary">Lunar Project Annual Cost</label>
                             <span id="volume_annual_cost_output" class="text-xl font-extrabold text-accent">$0</span>
                         </div>
-                        <!-- NEW OUTPUT: Final ROI -->
+                        <!-- Final ROI -->
                         <div class="flex justify-between items-center border-t pt-4 mt-4">
                             <label class="text-2xl font-bold text-primary">Final ROI (Return on Investment)</label>
                             <span id="volume_roi_percentage_output" class="text-2xl font-extrabold text-accent">0%</span>
@@ -393,7 +393,9 @@
                             let errorStatus = response.status;
                             let errorMessage = `Proxy server error: Status ${errorStatus} ${response.statusText}.`;
 
-                            if (errorStatus === 405) {
+                            if (errorStatus === 503) {
+                                errorMessage = `503 Service Unavailable: The request was received but the proxy function or upstream service (Gemini API) failed. Please check the **logs and health status of your serverless proxy function** immediately.`;
+                            } else if (errorStatus === 405) {
                                 errorMessage = `405 Method Not Allowed Error: Your proxy server or serverless function is deployed but is not configured to accept the HTTP POST method. Please update the serverless function's configuration to allow POST requests on the endpoint: ${proxyUrl}.`;
                             } else if (errorStatus === 404) {
                                 errorMessage = `404 Error: The secure proxy endpoint (${proxyUrl}) was not found. Ensure your serverless function is deployed correctly.`;
@@ -423,7 +425,7 @@
                     const B2 = parseFloat(document.getElementById('b2').value) || 0;
                     const B3 = parseFloat(document.getElementById('b3').value) || 0;
                     const B4 = parseFloat(document.getElementById('b4').value) || 0;
-                    // NEW: Retrieve Employee Count for pricing
+                    // Retrieve Employee Count for pricing
                     const employeeCount = parseFloat(document.getElementById('employee_count_volume').value) || 0; 
                     
                     // 0. GET ANNUAL COST
@@ -451,7 +453,7 @@
                     document.getElementById('b14_output').textContent = formatNumber(B14_total_annual_hours);
                     document.getElementById('b15_output').textContent = formatCurrency(B15_labor_savings);
                     document.getElementById('b18_output').textContent = formatCurrency(B18_total_risk_reduction);
-                    // NEW OUTPUTS
+                    // Update Annual Cost and Final ROI
                     document.getElementById('volume_annual_cost_output').textContent = formatCurrency(annualCost); 
                     document.getElementById('volume_roi_percentage_output').textContent = formatPercent(finalROI);
 
