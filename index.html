@@ -393,7 +393,9 @@
                             let errorStatus = response.status;
                             let errorMessage = `Proxy server error: Status ${errorStatus} ${response.statusText}.`;
 
-                            if (errorStatus === 404) {
+                            if (errorStatus === 405) {
+                                errorMessage = `405 Method Not Allowed Error: Your proxy server or serverless function is deployed but is not configured to accept the HTTP POST method. Please update the serverless function's configuration to allow POST requests on the endpoint: ${proxyUrl}.`;
+                            } else if (errorStatus === 404) {
                                 errorMessage = `404 Error: The secure proxy endpoint (${proxyUrl}) was not found. Ensure your serverless function is deployed correctly.`;
                             } else if (errorStatus >= 500) {
                                 errorMessage = `Server Error: The proxy function failed (Status ${errorStatus}). The issue is likely on the server-side where the API Key is handled.`;
