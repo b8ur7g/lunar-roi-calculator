@@ -306,7 +306,9 @@
                 ],
                 
                 // --- GEMINI API CONSTANTS ---
-                API_KEY: "", // If you want to use models other than gemini-2.5-flash-preview-05-20, provide an API key here. Otherwise, leave this as-is.
+                API_KEY: "AIzaSyBw1iiTQ24JaGSqiKmB4xs_EIzvHKt3mhs", 
+                // IMPORTANT: For live environments (like GitHub Pages), you MUST replace the "" above with your valid Gemini API Key string.
+                // Example: API_KEY: "AIzaSy...your-actual-key...",
                 API_MODEL: "gemini-2.5-flash-preview-05-20",
                 // UPDATED SYSTEM PROMPT: Now focused on objective, professional summary creation.
                 SYSTEM_PROMPT: "You are an objective financial summary creator for a cybersecurity platform called 'Lunar Credentials ROI Calculator.' Your goal is to provide a concise, single-paragraph executive summary of the calculated ROI data. The tone must be professional and informative, summarizing the hard cost savings (Labor) and strategic financial avoidance (Risk Reduction/Avoidance) without being overly persuasive or promotional. State the key metrics clearly using the exact numbers provided.",
@@ -337,6 +339,11 @@
 
             // --- LLM API CALL WITH BACKOFF ---
             async function callGeminiAPI(userQuery, systemPrompt, maxRetries = 3) {
+                // IMMEDIATE VALIDATION: Check if API Key is empty before making a request
+                if (C.API_KEY === "") {
+                    return `ERROR: Authorization Required. To enable this feature, please edit the script and provide a valid Gemini API Key in the 'C.API_KEY' constant. The current key is empty.`;
+                }
+
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${C.API_MODEL}:generateContent?key=${C.API_KEY}`;
                 
                 const payload = {
@@ -368,7 +375,8 @@
                             let errorMessage = `API request failed with status: ${errorStatus} ${response.statusText}.`;
 
                             if (errorStatus === 400 || errorStatus === 403) {
-                                errorMessage = `The API request failed due to an authorization issue (Status ${errorStatus}). Please ensure your environment has correctly provided the API key and that the API is enabled for your project.`;
+                                // Specific instruction for the user's observed 403 error
+                                errorMessage = `Authorization Error (403/400): The API Key provided is invalid or lacks necessary permissions for the Gemini service. Check your key and ensure the service is enabled in your Google Cloud Project.`;
                             } else if (errorStatus === 429) {
                                 // Explicitly handle 429 inside the catch block to continue the retry loop
                                 const delay = Math.pow(2, i) * 1000;
@@ -383,7 +391,7 @@
                     } catch (error) {
                         if (i === maxRetries - 1) {
                             // On final failure, return the most specific error message captured.
-                            return `Final Error: API failed after ${maxRetries} attempts. Cause: ${error.message}.`; 
+                            return `CRITICAL FAILURE: API call failed after ${maxRetries} attempts. Cause: ${error.message}.`; 
                         }
                         // For network or general errors, retry with backoff as well
                         const delay = Math.pow(2, i) * 1000;
