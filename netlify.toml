@@ -6,8 +6,12 @@ directory = "api"
 
 [[redirects]]
 
-This rule ensures that if your calculator calls the proxy,
-Netlify knows to route it to the correct serverless function.
+This rule fixes the 405 Method Not Allowed error.
+It routes all traffic from /api/generate-summary to the actual serverless function,
+ensuring POST requests are correctly handled by the Node.js code.
 from = "/api/generate-summary"
 to = "/.netlify/functions/generate-summary"
 status = 200
+
+Crucial for allowing POST, GET, etc.
+force = true
