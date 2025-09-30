@@ -367,12 +367,14 @@
                             console.warn(`Rate limit hit (429). Retrying in ${delay / 1000}s...`);
                             await new Promise(resolve => setTimeout(resolve, delay));
                         } else {
-                            throw new Error(`API request failed with status: ${response.status}`);
+                            // Non-429 API failure (likely 400/403 for missing key)
+                            throw new Error(`API request failed with status: ${response.status} ${response.statusText}`);
                         }
                     } catch (error) {
                         if (i === maxRetries - 1) {
                             console.error("Gemini API call failed after multiple retries:", error);
-                            return "Error: Could not generate pitch. Please check console for details.";
+                            // Return the specific error message encountered on final attempt
+                            return `Final Error: API failed after ${maxRetries} attempts. Reason: ${error.message}.`; 
                         }
                         // For network or general errors, retry with backoff as well
                         const delay = Math.pow(2, i) * 1000;
@@ -587,3 +589,4 @@
     </script>
 </body>
 </html>
+
