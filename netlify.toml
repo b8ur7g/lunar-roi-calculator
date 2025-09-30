@@ -6,7 +6,7 @@ directory = "api"
 
 [[redirects]]
 
-This rule fixes the 405 Method Not Allowed error.
+This rule fixes the 405 Method Not Allowed error (and ensures 404 is resolved).
 It routes all traffic from /api/generate-summary to the actual serverless function,
 ensuring POST requests are correctly handled by the Node.js code.
 from = "/api/generate-summary"
